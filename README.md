@@ -2,6 +2,7 @@
 
 ## 1. kubernetes
 
-- [kubespray](kubernetes/kuespray.md)
+- [etcd](kubernetes/etcd.md)
+- [kubespray](kubernetes/kubespray.md)
 - [QA](kubernetes/QA.md)
 
