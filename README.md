@@ -2,5 +2,6 @@
 
 ## 1. kubernetes
 
-- [kubespray](./kubernetes/kuespray.md)
-- [QA](./kubernetes/QA.md)
+- [kubespray](kubernetes/kuespray.md)
+- [QA](kubernetes/QA.md)
+
