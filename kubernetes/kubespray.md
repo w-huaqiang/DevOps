@@ -280,7 +280,7 @@ ansible-playbook -i inventory/pro/inventory.ini --become --become-user=root -e "
 
 ```bash
 # 安装yumdownloader
-yum install yum-utils createrepo wget
+yum install yum-utils createrepo wget rsync
 
 # 当前需要提前准备rpm包如下，若需增加，直接增加即可
 for i in curl rsync socat unzip e2fsprogs xfsprogs libselinux-python device-mapper-libs ebtables nss libselinux-python sshpass container-selinux conntrack python3 python3-pip yum-utils python-kitchen python-chardet libxml2-python libseccomp audit-libs-python
