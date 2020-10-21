@@ -1,4 +1,15 @@
-1. `kernel: XFS: possible memory allocation deadlock in kmem_alloc(mode: 0x250)`
+# content
+- [content](#content)
+    - [1. `kernel: XFS: possible memory allocation deadlock in kmem_alloc(mode: 0x250)`](#1-kernel-xfs-possible-memory-allocation-deadlock-in-kmem_allocmode-0x250)
+    - [2. `Nameserver limits were exceeded`](#2-nameserver-limits-were-exceeded)
+    - [3. docker私有仓库，本地TLS认证](#3-docker私有仓库本地tls认证)
+    - [4. kubelet报错](#4-kubelet报错)
+    - [5. oracle是否适合跑在kubernetes上，那么跑在docker上呢？](#5-oracle是否适合跑在kubernetes上那么跑在docker上呢)
+
+
+
+
+### 1. `kernel: XFS: possible memory allocation deadlock in kmem_alloc(mode: 0x250)`
 
 ```bash
 # 内存死锁,可以使用以下方式尝试解决
@@ -33,7 +44,7 @@ $ reboot
 
 
 
-2. `Nameserver limits were exceeded`
+### 2. `Nameserver limits were exceeded`
 
 ```bash
 # kubelet 的nameserver数量超出限制,不能超过3个
@@ -42,7 +53,7 @@ $ cat /etc/resolv.conf
 
 
 
-3. docker私有仓库，本地认证
+### 3. docker私有仓库，本地TLS认证
 
 ```bash
 #将Harbor 里面的CA证书,放在指定两个位置,并重启docker
@@ -54,7 +65,7 @@ $ sudo systemctl restart docker
 
 
 
-4.  kubelet报错
+### 4. kubelet报错
 
 ```bash
  kubelet_network_linux.go:111] Not using --random-fully in the MASQUERADE rule for iptables because the local version of iptables does not support it
@@ -84,3 +95,103 @@ $ cd iptables-1.6.2 \
 
 
 
+### 5. oracle是否适合跑在kubernetes上，那么跑在docker上呢？
+answer
+```
+首先，oracle已经提供了image,用于oracle容器化安装，但是也提出仅用于`non-production`的使用。所以如果你想快速启动一个oracle用于测试、学习、demo，那么你可以使用docker或者k8s启动一个oracle 12c。
+如果使用容器启动oracle，会带来以下问题：
+- oracle如果出问题定位困难，因为涉及到容器技术和数据库技术，哪种都不是那么容易。
+- 维护困难，以往维护只需SSH就行了，现在DBA维护甚至需要到oracle运行哪台物理机使用docker命令才能进去
+- 升级打补丁困难，oracle相对复杂，升级或者打补丁如何持久化，难道靠官网image的更新吗，更新后的image是否能支持之前数据库，这也是个风险
+- oracle数据库本省是应用中比较重要的部分，对宿主机容器的升级维护也会影响到数据库
+
+```
+可参考
+> https://oracle.github.io/weblogic-kubernetes-operator/userguide/overview/database/
+> https://oracle-base.com/articles/linux/docker-oracle-dba-guide-to-docker
+
+k8s安装oracle
+- 创建拉去镜像的key
+```bash
+$ kubectl create secret docker-registry regsecret \
+        --docker-server=container-registry.oracle.com \
+        --docker-username=your.email@some.com \
+        --docker-password=your-password \
+        --docker-email=your.email@some.com \
+        -n database-namespace
+```
+
+- 创建deployment,运行oracle
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: database
+  namespace: database-namespace
+  labels:
+    app: database
+    version: 12.1.0.2
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: database
+      version: 12.1.0.2
+  template:
+    metadata:
+      name: database
+      labels:
+        app: database
+        version: 12.1.0.2
+    spec:
+      volumes:
+      - name: dshm
+        emptyDir:
+          medium: Memory
+      # add your volume mount for your persistent storage here
+      containers:
+      - name: database
+        command:
+        - /home/oracle/setup/dockerInit.sh
+        image: container-registry.oracle.com/database/enterprise:12.1.0.2
+        imagePullPolicy: IfNotPresent
+        resources:
+          requests:
+            memory: 10Gi
+        ports:
+        - containerPort: 1521
+          hostPort: 1521
+        volumeMounts:
+          - mountPath: /dev/shm
+            name: dshm
+          # add your persistent storage for DB files here
+        env:
+          - name: DB_SID
+            value: OraDoc
+          - name: DB_PDB
+            value: OraPdb
+          - name: DB_PASSWD
+            value: *password*
+          - name: DB_DOMAIN
+            value: my.domain.com
+          - name: DB_BUNDLE
+            value: basic
+          - name: DB_MEMORY
+            value: 8g
+      imagePullSecrets:
+      - name: regsecret
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: database
+  namespace: database-namespace
+spec:
+  selector:
+    app: database
+    version: 12.1.0.2
+  ports:
+  - protocol: TCP
+    port: 1521
+    targetPort: 1521
+```
