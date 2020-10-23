@@ -14,6 +14,7 @@
 ## 2. kubernetes
 
 - [etcd](kubernetes/etcd.md)
+- [kubeadm](kubernetes/kubeadm.md)
 - [kubespray](kubernetes/kubespray.md)
 - [QA](kubernetes/QA.md)
 - [网络上cka试题](kubernetes/cka.md)
