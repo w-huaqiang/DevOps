@@ -5,6 +5,7 @@
     - [3. docker私有仓库，本地TLS认证](#3-docker私有仓库本地tls认证)
     - [4. kubelet报错](#4-kubelet报错)
     - [5. oracle是否适合跑在kubernetes上，那么跑在docker上呢？](#5-oracle是否适合跑在kubernetes上那么跑在docker上呢)
+    - [6.kubectl edit configmap 格式乱了](#6kubectl-edit-configmap-格式乱了)
 
 
 
@@ -194,4 +195,10 @@ spec:
   - protocol: TCP
     port: 1521
     targetPort: 1521
+```
+
+### 6.kubectl edit configmap 格式乱了
+
+```bash
+kubectl get -n kube-system -o yaml cm aws-auth | sed -E 's/[[:space:]]+\\n/\\n/g' | kubectl apply -f -
 ```
