@@ -233,7 +233,7 @@ mvn -v
 
 配置seting.xml
 
-vi /usr/local/apache-maven-3.3.9/conf/settings.xml  servers配置中添加如下两段,用来java中pom.xml提交是的用户名密码验证
+vi /usr/local/apache-maven-3.3.9/conf/settings.xml  servers配置中添加如下两段,用来java中pom.xml提交是的用户名密码验证,mirror设置为，所有jar，plugin请求均从nexus下载
 ```xml
     <server>
         <id>releases</id>
@@ -245,10 +245,43 @@ vi /usr/local/apache-maven-3.3.9/conf/settings.xml  servers配置中添加如下
         <username>admin</username>
         <password>123456</password>
     </server>
+<mirrors>
+<mirror>
+<!-- 该镜像的唯一标识符。id用来区分不同的mirror元素。  -->
+<id>maven-public</id>
+<!-- 镜像名称  -->
+<name>maven-public</name>
+<!-- *指的是访问任何仓库都使用我们的私服 -->
+<mirrorOf>*</mirrorOf>
+<!-- 该镜像的URL。构建系统会优先考虑使用该URL，而非使用默认的服务器URL。  -->
+<url>http://3.1.20.120:31081/repository/maven-public/</url>
+</mirror>
+</mirrors>
+<profiles>
+<profile>
+<id>nexusProfile</id>
+<repositories>
+<repository>
+<id>nexus</id>
+<name>nexus</name>
+<url>http://3.1.20.120:31081/repository/maven-public</url>
+<releases>
+<enabled>true</enabled>
+</releases>
+<snapshots>
+<enabled>true</enabled>
+</snapshots>
+</repository>
+</repositories>
+</profile>
+</profiles>
+<activeProfiles>
+<activeProfile>nexusProfile</activeProfile>
+</activeProfiles>
 ```
 
 
-pom.xml中配置
+pom.xml中配置，此处配置为：当mvn clean deploy时候，将jar上传到nexus的release或者snapshot仓库。
 > ```xml
 > <distributionManagement>
 >    <repository>
