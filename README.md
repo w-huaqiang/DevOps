@@ -18,7 +18,8 @@
 - [kubespray](kubernetes/kubespray.md)
 ### addons
 
-- [cert-manager](cicd/cert-manager.md)
+- [cert-manager](kubernetes/cert-manager.md)
+- [harbor](kubernetes/harbor.md)
 
 ### QA
 - [QA](kubernetes/QA.md)
