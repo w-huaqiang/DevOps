@@ -3,6 +3,7 @@
 # 1. 基础
 
 - [DevOps定义](devops/basicknowledge.md)
+- [四个指标](devops/data.md)
 
 # 2. docker
 
