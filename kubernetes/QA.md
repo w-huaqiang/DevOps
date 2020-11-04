@@ -58,8 +58,8 @@ $ cat /etc/resolv.conf
 
 ```bash
 #将Harbor 里面的CA证书,放在指定两个位置,并重启docker
-$ sudo mkdir /etc/docker/certs.d/harbor.devops.nari
-$ sudo cp ca.crt /etc/docker/certs.d/harbor.devops.nari/
+$ sudo mkdir /etc/docker/certs.d/harbor.devops.na
+$ sudo cp ca.crt /etc/docker/certs.d/harbor.devops.na/
 $ sudo cat ca.crt >> /etc/ssl/certs/ca-certificates.crt
 $ sudo systemctl restart docker
 ```

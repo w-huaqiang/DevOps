@@ -8,6 +8,7 @@
 # 2. docker
 
 - [容器及docker基础介绍](docker/dockerbase.md)
+- [docker架构](docker/dockerinfra.md)
 - [docker安装](docker/dockerinstall.md)
 - [docker参数](docker/dockerparameter.md)
 
@@ -29,6 +30,7 @@
 # 4. CI/CD
 
 - [nexus](cicd/nexus.md)
+- [gerrit code review](cicd/gerrit.md)
 
 
 # 5. istio
