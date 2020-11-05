@@ -5,6 +5,7 @@
   - [2. 运行命令参数](#2-运行命令参数)
     - [2.1 镜像](#21-镜像)
     - [2.2 容器](#22-容器)
+    - [2.3 常用命令汇总](#23-常用命令汇总)
 
 ## 1. 启动参数
 docker的启动参数比较多,主要放在`systemctl`管理的`/usr/lib/systemd/system/docker.service`文件和`/etc/docker/daemon.json`中，一般修改`/etc/docker/daemon.json`即可达到修改配置的需求.
@@ -191,3 +192,14 @@ exit
 ```bash
 [root@localhost system]# docker rm 
 ```
+
+### 2.3 常用命令汇总
+|命令分类| 子命令|
+|---|---|
+|Docker环境信息|info、version|
+|容器生命周期管理|run、exec、stop、rm、start、pause、unpause、create、kill、restart|
+|镜像仓库|login、logout、pull、push、search|
+|镜像管理|build、images、import、load、rmi、save、tag、commit|
+|容器运维操作|attach、export、inspect、port、ps、rename、stats、top、wait、cp、diff、update|
+|容器资源管理|volume、network|
+|日志|events、history、logs|
