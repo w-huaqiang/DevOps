@@ -42,3 +42,5 @@ docker run -d --ipc=host data-client
 # 可以使不同的容器使用同一个IPC namespace
 docker run -d --ipc=container:data-server data-client
 ```
+
+- PID namespace, 对进程PID重新标号，即两个不同namespace下的进程可以有相同的PID。每个PID namespace 都有自己的计数程序。内核为所有的PID namespace维护了一个树状结构，最顶层被称为root namespace
