@@ -11,6 +11,7 @@
 - [docker安装](docker/dockerinstall.md)
 - [docker参数](docker/dockerparameter.md)
 - [docker架构及核心原理](docker/dockerinfra.md)
+- [容器化改造实践要求](docker/containergo.md)
 
 
 # 3. kubernetes
