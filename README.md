@@ -4,6 +4,7 @@
 
 - [DevOps定义](devops/basicknowledge.md)
 - [四个指标](devops/data.md)
+- [三步工作法](devops/threestep.md)
 
 # 2. docker
 

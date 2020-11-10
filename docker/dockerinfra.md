@@ -86,4 +86,3 @@ user namespace主要隔离了安全相关的标识符和属性，包括用户ID�
 - user namespace中创建的用户并未和父namespace中用户关联，默认显示UID为65534
 
 ## 2.2 cgroups 资源限制
-\
