@@ -21,6 +21,7 @@
 - [etcd](kubernetes/etcd.md)
 - [kubeadm](kubernetes/kubeadm.md)
 - [kubespray](kubernetes/kubespray.md)
+
 ### addons
 
 - [cert-manager](kubernetes/cert-manager.md)
@@ -34,6 +35,7 @@
 # 4. CI/CD
 
 - [nexus](cicd/nexus.md)
+- [openldap](cicd/openldap.md)
 - [gerrit code review](cicd/gerrit.md)
 
 
