@@ -9,7 +9,7 @@
       - [2.3.4 MNT](#234-mnt)
       - [2.3.5 NET](#235-net)
       - [2.3.6 User](#236-user)
-  - [2.2 cgroups 资源限制](#22-cgroups-资源限制)
+    - [2.2 cgroups 资源限制](#22-cgroups-资源限制)
 
 ## 1. docker 架构
 <img src="../image/docker-infra.jpg" alt="瀑布模式" width="400" >
@@ -85,4 +85,66 @@ user namespace主要隔离了安全相关的标识符和属性，包括用户ID�
 - user namespace被创建后，第一个进程被赋予该namespace中的全部权限，这样init进程就可以完成必要的初始化工作。
 - user namespace中创建的用户并未和父namespace中用户关联，默认显示UID为65534
 
-## 2.2 cgroups 资源限制
+### 2.2 cgroups 资源限制
+
+linux使用namespace技术，可以通过系统调用构建一个相对隔离的shell环境，此时我们已经可以将其称之为容器，但是对于计算资源比如内存、CPU的控制并没有涉及。这样不同的容器之前还会存在竞争，当某个容器消耗光所有内存时，其他容器将没法正常运行。所以需要引进另外一个强大的内核技术---cgroups。
+
+cgroups最初名为process container,是Google工程师2006年提出，后来由于container有多重含义容器引起误解，就在2007年更名为control groups，并整合进Linux内核。
+
+> cgroups是Linux内核提供的一种机制，这种机制可以根据需求把一系列系统任务及其子任务整合到按资源划分等级的不同组内，从而为系统资源管理提供一个统一的框架。
+
+简单来说，cgroups可以限制、记录任务组所使用的物理资源，比如CPU、内存、IO等。为容器虚拟化提供了可行性。是构建Docker等一系列虚拟化管理工具的基石。其实cgoups是内核附加在程序上的一系列钩子，通过程序运行时对资源的调度出发相应的钩子以达到资源追踪和限制的目的。
+
+cgroups主要功能
+- 资源限制：cgroups可以对任务使用的资源总额进行限制。如设定应用运行时使用的内存上限，一旦超过配额就会出发OOM提示。
+- 优先级分配：通过分配CPU时间片数量及磁盘IO带宽大小，实际上就相当于控制了任务运行的优先级。
+- 资源统计：cgroups可以统计资源使用量，如CPU使用时常、内存使用量等，这个功能非常适用于计费。
+- 任务控制：cgroups可以对任务执行挂起、恢复等操作。
+
+Docker daemon会在单独挂载了每一个子系统的控制组目录（比如/sys/fs/cgroup/cpu)下创建一个名为docker的控制组，然后在docker控制组里面，再为每个容器创建一个以容器ID为名称的容器控制组，这个容器里的所有进程的进程号都会写到该控制组tasks中，并在控制文件中写入预设限制参数值。
+```bash
+[root@node1 docker]# pwd
+/sys/fs/cgroup/cpu/docker
+[root@node1 docker]# tree 
+.
+├── 959c32eee162ae08905293df014142a17a0393d106a69d24479d15b897ce8a1e
+│   ├── cgroup.clone_children
+│   ├── cgroup.event_control
+│   ├── cgroup.procs
+│   ├── cpuacct.stat
+│   ├── cpuacct.usage
+│   ├── cpuacct.usage_percpu
+│   ├── cpu.cfs_period_us
+│   ├── cpu.cfs_quota_us
+│   ├── cpu.rt_period_us
+│   ├── cpu.rt_runtime_us
+│   ├── cpu.shares
+│   ├── cpu.stat
+│   ├── notify_on_release
+│   └── tasks
+├── cgroup.clone_children
+├── cgroup.event_control
+├── cgroup.procs
+├── cpuacct.stat
+├── cpuacct.usage
+├── cpuacct.usage_percpu
+├── cpu.cfs_period_us
+├── cpu.cfs_quota_us
+├── cpu.rt_period_us
+├── cpu.rt_runtime_us
+├── cpu.shares
+├── cpu.stat
+├── notify_on_release
+└── tasks
+
+```
+> 注意：在新版本的docker中，如果使用containerd时目录结构有所不同
+> 可以查看/sys/fs/cgroup/cpu/system.slice
+
+一个cgroup创建完成，不管绑定了任何子系统，其目录下都会生成以下几个文件，用来描述cgroup的相应信息。同样，把相应信息写入这些配置文件就可以生效
+1. tasks: 这个文件罗列了所有在该cgroup中的任务TID，即所有进程或者线程ID。该文件一个任务的TID写到这个文件中就意味着把这任务加入这个cgroup中，但该文件不保证TID有序。如果任务所在的任务组与其不在同一个cgroup，那么会在cgroup.procs文件里记录一个该任务所在任务组的TGID值。
+2. cgroups.procs: 这个文件罗列所有在该cgroup中的TGID（线程组ID），即线程组中第一个进程的PID。写一个TGID到这个文件就意味着把与其相关的线程都加入到这个cgroup中。
+3. notify_no_release: 0或者1，表示是否在cgroup中最后一个任务退出时通知运行release agent，默认情况下是0，表示不运行。
+4. release_agent: 指定release agent执行脚本的文件路径，这个脚本通常用于自动化卸载无用的cgroup。该文件在最顶层cgroup目录中存在。
+
+

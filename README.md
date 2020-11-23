@@ -11,8 +11,10 @@
 
 - [容器及docker基础介绍](docker/dockerbase.md)
 - [docker安装](docker/dockerinstall.md)
-- [docker参数](docker/dockerparameter.md)
-- [docker架构及核心原理](docker/dockerinfra.md)
+- [docker参数解读](docker/dockerparameter.md)
+- [docker架构与操作系统内核](docker/dockerinfra.md)
+
+## 2.1 docker实践
 - [容器化改造实践要求](docker/containergo.md)
 
 

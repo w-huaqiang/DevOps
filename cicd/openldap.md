@@ -209,7 +209,7 @@ metadata:
   name: ingress-phpldapadmin
 spec:
   rules:
-  - host: ldap.devops.nari
+  - host: ldap.devops.na
     http:
       paths:
       - backend:
@@ -218,7 +218,7 @@ spec:
         path: /
   tls:
   - hosts:
-    - ldap.devops.nari
+    - ldap.devops.na
     secretName: openldap-tls
 
 $ kubectl apply -f phpldapadmin.yaml 
