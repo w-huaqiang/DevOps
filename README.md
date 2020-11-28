@@ -19,10 +19,13 @@
 
 
 # 3. kubernetes
+- 介绍
 
-- [etcd](kubernetes/etcd.md)
-- [kubeadm](kubernetes/kubeadm.md)
-- [kubespray](kubernetes/kubespray.md)
+    - 架构
+  - [etcd](kubernetes/etcd.md)
+- 安装
+  - [kubeadm](kubernetes/kubeadm.md)
+  - [kubespray](kubernetes/kubespray.md)
 
 ### addons
 

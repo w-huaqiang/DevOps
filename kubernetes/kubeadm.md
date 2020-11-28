@@ -1,5 +1,6 @@
 # comment
 - [comment](#comment)
+    - [Before you begin](#before-you-begin)
     - [ubuntu](#ubuntu)
     - [kubeadm](#kubeadm)
       - [install](#install)
@@ -13,6 +14,29 @@
       - [创建cluster-info](#创建cluster-info)
       - [创建bootstrap token](#创建bootstrap-token)
       - [work 节点](#work-节点)
+
+### Before you begin
+- 主机要求
+   - Ubuntu 16.04+
+   - CentOS 7
+   - RHEL 7
+   - Fedora 25+
+
+- 大于2GB内存/每个主机
+- 大于2CPU/每个主机
+- 每台主机完全的网络链接
+- 唯一的主机名，MAC地址，product_uuid
+```bash
+# product_uuid
+sudo cat /sys/class/dmi/id/product_uuid
+
+#MAC
+ifconfig -a
+
+```
+- 相关端口可用（最好不安装其他服务)
+- Swap 是关闭的
+
 
 ### ubuntu
 
