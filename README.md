@@ -20,12 +20,14 @@
 
 # 3. kubernetes
 - 介绍
-
     - 架构
   - [etcd](kubernetes/etcd.md)
 - 安装
   - [kubeadm](kubernetes/kubeadm.md)
   - [kubespray](kubernetes/kubespray.md)
+- 进阶
+  - [informer控制器模式](kubernetes/kubespray.md)
+
 
 ### addons
 
