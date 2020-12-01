@@ -26,7 +26,8 @@
   - [kubeadm](kubernetes/kubeadm.md)
   - [kubespray](kubernetes/kubespray.md)
 - 进阶
-  - [informer控制器模式](kubernetes/kubespray.md)
+  - [Probe 探针](kubernetes/probe.md)
+  - [informer控制器模式](kubernetes/informer.md)
 
 
 ### addons
