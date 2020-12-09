@@ -115,3 +115,5 @@ snapshot restore //tmp/snapshot-pre-boot.db
 >
 > ​             2. 恢复前，清空`/var/lib/etcd`
 
+
+http://thesecretlivesofdata.com/raft/

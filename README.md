@@ -36,6 +36,7 @@
 - 进阶
   - [Probe 探针](kubernetes/probe.md)
   - [informer控制器模式](kubernetes/informer.md)
+  - [dynamic provisioner开发(nfs-provisioner为例)](kubernetes/dynamic-provisioner.md)
 
 
 ### QA
