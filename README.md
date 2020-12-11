@@ -29,7 +29,7 @@
     - [pod](kubernetes/pod.md)
     - [configmap](kubernetes/configmap.md)
     - [secret](kubernetes/secret.md)
-
+    - [crd](kubernetes/crd.md)
   - [安装](kubernetes/install.md)
     - [kubeadm](kubernetes/kubeadm.md)
     - [kubespray](kubernetes/kubespray.md)
