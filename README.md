@@ -27,6 +27,7 @@
     - [harbor](kubernetes/harbor.md)
   - [cluster资源](kubrenetes/resources.md)
     - [pod](kubernetes/pod.md)
+    - [deployment](kubernetes/deployment.md)
     - [configmap](kubernetes/configmap.md)
     - [secret](kubernetes/secret.md)
     - [crd](kubernetes/crd.md)
@@ -37,6 +38,7 @@
   - [Probe 探针](kubernetes/probe.md)
   - [informer控制器模式](kubernetes/informer.md)
   - [dynamic provisioner开发(nfs-provisioner为例)](kubernetes/dynamic-provisioner.md)
+  - [切换docker到containerd](kubernetes/containerd.md)
 
 
 ### QA
