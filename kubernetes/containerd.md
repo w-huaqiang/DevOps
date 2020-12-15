@@ -51,6 +51,22 @@ version = 2
         SystemdCgroup = true
 ```
 
+> 一般默认cni和stream配置即可满足kubelet运行使用
+> 可以通过`crictl info`查看，但是某些自定义的k8s安装需要配置
+> cni是被containerd-cri调用
+> ```toml
+>  [plugins.cri.cni]
+>      bin_dir = "/opt/cni/bin"
+>      conf_dir = "/etc/cni/net.d" 
+> ```
+> stream是kubectl exec/log等命令建立流转发通道
+> ```toml
+>   [plugins.cri]
+>  stream_server_address = "127.0.0.1"
+>  stream_server_port = "0"
+>  enable_tls_streaming = false
+> ```
+
 ```bash
 systemctl start containerd
 ```
