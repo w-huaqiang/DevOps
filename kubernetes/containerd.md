@@ -107,3 +107,9 @@ node4   Ready    <none>   61d   v1.18.9   3.1.20.123    <none>        CentOS Lin
 node5   Ready    <none>   61d   v1.18.9   3.1.20.124    <none>        CentOS Linux 7 (Core)   5.9.1-1.el7.elrepo.x86_64    docker://19.3.13
 node6   Ready    <none>   61d   v1.18.9   3.1.20.125    <none>        CentOS Linux 7 (Core)   3.10.0-1160.6.1.el7.x86_64   containerd://1.4.3
 ```
+
+### kubelet使用docker和containerd不同的架构图
+
+<img src="../image/kubelet-docker.png" alt="瀑布模式" width="400" >
+
+<img src="../image/kubelet-containerd.png" alt="瀑布模式" width="400" >
