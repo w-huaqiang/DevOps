@@ -6,6 +6,7 @@
     - [4. kubelet报错](#4-kubelet报错)
     - [5. oracle是否适合跑在kubernetes上，那么跑在docker上呢？](#5-oracle是否适合跑在kubernetes上那么跑在docker上呢)
     - [6.kubectl edit configmap 格式乱了](#6kubectl-edit-configmap-格式乱了)
+    - [2. `Unable to perform initial IP allocation check: unable to refresh the service IP block`](#2-unable-to-perform-initial-ip-allocation-check-unable-to-refresh-the-service-ip-block)
 
 
 
@@ -201,4 +202,22 @@ spec:
 
 ```bash
 kubectl get -n kube-system -o yaml cm aws-auth | sed -E 's/[[:space:]]+\\n/\\n/g' | kubectl apply -f -
+```
+
+
+### 2. `Unable to perform initial IP allocation check: unable to refresh the service IP block`
+
+apiserver无法启动，并报错
+```bash
+F0826 11:14:55.383445       1 controller.go:157] Unable to perform initial IP allocation check: unable to refresh the service IP block: Get https://[::1]:6443/api/v1/services: net/http: TLS handshake timeout
+```
+
+考虑使用IPv6,使之无法链接，禁用主机ipv6
+
+```bash
+cat >> /etc/sysctl.conf <<EOF
+net.ipv6.conf.all.disable_ipv6 = 1
+net.ipv6.conf.default.disable_ipv6 = 1
+EOF
+sysctl -p
 ```
