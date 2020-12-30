@@ -12,6 +12,8 @@
   - [备份恢复](#备份恢复)
     - [备份](#备份)
     - [恢复](#恢复)
+  - [监控](#监控)
+    - [磁盘问题](#磁盘问题)
 
 #### etcd概念
 
@@ -117,3 +119,37 @@ snapshot restore //tmp/snapshot-pre-boot.db
 
 
 http://thesecretlivesofdata.com/raft/
+
+#### 监控
+
+在启动etcd时可以设置相关参数，使其暴露metrics接口，提供监控告警信息。
+```bash
+ETCD_LISTEN_METRIC_URLS=http://192.17.1.3:4005/metrics
+```
+
+> 注意，可以设置TLS增加安全性
+> ```bash
+> "ETCD_LISTEN_METRIC_URLS=https://192.17.1.3:4005",
+> "ETCD_ENABLE_METRIC_TLS=true",
+> "ETCD_METRICS_CERT_FILE=/srv/kubernetes/server.cer",
+> "ETCD_METRICS_KEY_FILE=/srv/kubernetes/server_key.pem",
+> ```
+
+访问： `curl localhost:4005:/metrics`
+
+##### 磁盘问题
+
+|Name|描述
+|--|--|
+|wal_fsync_duration_seconds|wal调用fsync的延迟
+｜backend_commit_duration_seconds|backend调用commit延迟
+
+当etcd在应用日志条目之前将其日志条目保存到磁盘时，将调用wal_fsync。
+当etcd将其最近更改的增量快照提交到磁盘时，调用backend_commit。
+
+所以这两个参数一般和磁盘有关
+
+也可快捷通过命令测试
+```bash
+etcdctl check perf
+```
