@@ -60,4 +60,7 @@
 
 - [knative](serverless/knative.md)
 
+# 7. 其他
+
+- [prometheus sql exporter](kubernetes/sql-exporter.md)
 
