@@ -1,6 +1,6 @@
 # content
 - [content](#content)
-  - [1. 安装k8s集群(部署节点可访问internet)](#1-安装k8s集群部署节点可访问internet)
+  - [1. 安装k8s集群](#1-安装k8s集群)
     - [1.1 准备](#11-准备)
       - [1.1.1 下载kubespray](#111-下载kubespray)
       - [1.1.2 准备本地yum源](#112-准备本地yum源)
@@ -24,9 +24,9 @@
 
 
 
-## 1. 安装k8s集群(部署节点可访问internet)
+## 1. 安装k8s集群
 
-保证部署节点可以访问internet。由于部署需要访问相关internet下载软件包，故需要保证部署节点可以访问internet(主要下载image,二进制包等,所以待安装k8s的主机还需要自行配置yum源，可以参考[ 准备离线资源](#准备资源)中方式，通过httpd配置本地yum）。
+保证部署节点可以访问internet。由于部署需要访问相关internet下载软件包，故需要保证部署节点可以访问internet(主要下载image,二进制包等,所以待安装k8s的主机还需要自行配置yum源
 
 ### 1.1 准备
 
@@ -46,13 +46,14 @@ tar -xzvf v2.14.1.tar.gz
 
 此处假设待安装k8s没有yum源
 
-1 . [准备yum](#准备yum)
+- 安装httpd
 
-2 . 安装httpd准备yum
 
 ```bash
 yum install httpd
-cp /mnt/centos78 /var/www/html/
+mkdir /var/www/html/centos78
+rm -rf /etc/httpd/conf.d/welcome.conf
+
 ```
 
 > 检验是否能够访问:
@@ -63,14 +64,55 @@ cp /mnt/centos78 /var/www/html/
 >
 > 注意:
 >
-> 有时候无法验证能够访问此yum，需要设置selinux
+> 有时候无法验证能够访问此yum，需要设置selinux,或者删除welcome文件
 >
 > ```bash
 > setenforce 0
+> rm -rf /etc/httpd/conf.d/welcome.conf
 > ```
 >
 > 
 
+- 操作系统源
+
+```bash
+# 安装yumdownloader
+yum install yum-utils createrepo wget rsync
+
+# 当前需要提前准备rpm包如下，若需增加，直接增加即可
+for i in curl rsync socat unzip e2fsprogs xfsprogs libselinux-python device-mapper-libs ebtables nss libselinux-python sshpass container-selinux conntrack python3 python3-pip yum-utils python-kitchen python-chardet libxml2-python libseccomp audit-libs-python nss nss-sysinit libxml2 yum-utils policycoreutils-python libcgroup setools-libs libsemanage-python python-IPy checkpolicy fuse-overlayfs slirp4netns fuse3-libs
+do
+yumdownloader --resolve --destdir /mnt/centos78/k8s/ $i
+done
+
+# 创建repo
+cd /mnt/centos78/k8s/ && createrepo .
+
+```
+
+
+
+- docker
+
+```bash
+cat << EOF > /etc/yum.repos.d/docker-ce.repo 
+[docker-ce]
+name=Docker-CE Repository
+baseurl=https://download.docker.com/linux/centos/7/x86_64/stable
+enabled=1
+gpgcheck=1
+keepcache=0
+gpgkey=https://download.docker.com/linux/centos/gpg
+EOF
+
+# sync相关yum源
+reposync -n --repoid="docker-ce" -p /mnt/centos78/docker
+# 下载gpg文件
+cd /mnt/centos78/docker/docker-ce $$ wget https://download.docker.com/linux/centos/gpg
+
+# 创建repo
+cd /mnt/centos78/docker/docker-ce && createrepo .
+```
 
 
 #### 1.1.3 更新inventory文件
@@ -169,7 +211,7 @@ baseurl=http://3.1.20.129/centos78/k8s
 gpgcheck=0
 EOF
 
-# 同步到各个节点
+# 同步到各个节点yum源
 $ ansible -i inventory/pro/inventory.ini all -m shell -a "rm -rf /etc/yum.repos.d/Cent*"
 $ ansible -i inventory/pro/inventory.ini all -m copy -a "src=/root/zdgt.repo dest=/etc/yum.repos.d/zdgt.repo"
 ```
@@ -206,6 +248,7 @@ common_required_pkgs:
   - xfsprogs
   - ebtables
   - sshpass
+  - yum-utils
 
 ##### 此处使用国内缓存镜像，如果更新镜像，可以参考本项目镜像更新部分
 kube_image_repo: "registry.cn-qingdao.aliyuncs.com/huaqiangk8s"
@@ -221,8 +264,8 @@ containerd_versioned_pkg:
   '1.3.7': "{{ containerd_package }}-1.3.7-3.1.el7"
   'stable': "{{ containerd_package }}-1.2.13-3.2.el7"
   'edge': "{{ containerd_package }}-1.2.13-3.2.el7"
-docker_cli_version: "19.03"
-docker_version: "19.03"
+docker_cli_version: "20.10"
+docker_version: "20.10"
 docker_versioned_pkg:
   'latest': docker-ce
   '17.03': docker-ce-17.03.3.ce-1.el7
@@ -232,6 +275,7 @@ docker_versioned_pkg:
   '18.06': docker-ce-18.06.3.ce-3.el7
   '18.09': docker-ce-18.09.9-3.el7
   '19.03': docker-ce-19.03.13-3.el7
+  '20.10': docker-ce-20.10.2-3.el7
   'stable': docker-ce-19.03.12-3.el7
   'edge': docker-ce-19.03.12-3.el7
 
@@ -239,6 +283,7 @@ docker_cli_versioned_pkg:
   'latest': docker-ce-cli
   '18.09': docker-ce-cli-18.09.9-3.el7
   '19.03': docker-ce-cli-19.03.13-3.el7
+  '20.10': docker-ce-cli-20.10.2-3.el7
 
 docker_selinux_versioned_pkg:
   'latest': docker-ce-selinux-17.03.3.ce-1.el7
@@ -276,46 +321,7 @@ ansible-playbook -i inventory/pro/inventory.ini --become --become-user=root -e "
 
 (若k8s节点无法访问internet, 则安装k8s前需要准备此资源，
 
-**1. 操作系统源**
 
-```bash
-# 安装yumdownloader
-yum install yum-utils createrepo wget rsync
-
-# 当前需要提前准备rpm包如下，若需增加，直接增加即可
-for i in curl rsync socat unzip e2fsprogs xfsprogs libselinux-python device-mapper-libs ebtables nss libselinux-python sshpass container-selinux conntrack python3 python3-pip yum-utils python-kitchen python-chardet libxml2-python libseccomp audit-libs-python
-do
-yumdownloader --resolve --destdir /mnt/centos78/k8s/ $i
-done
-
-# 创建repo
-cd /mnt/centos78/k8s/ && createrepo .
-
-```
-
-
-
-**2. docker**
-
-```bash
-cat << EOF > /etc/yum.repos.d/docker-ce.repo 
-[docker-ce]
-name=Docker-CE Repository
-baseurl=https://download.docker.com/linux/centos/7/x86_64/stable
-enabled=1
-gpgcheck=1
-keepcache=0
-gpgkey=https://download.docker.com/linux/centos/gpg
-EOF
-
-# sync相关yum源
-reposync -n --repoid="docker-ce" -p /mnt/centos78/docker
-# 下载gpg文件
-cd /mnt/centos78/docker/docker-ce $$ wget https://download.docker.com/linux/centos/gpg
-
-# 创建repo
-cd /mnt/centos78/docker/docker-ce && createrepo .
-```
 
 #### 3.2 下载kubespray
 
@@ -437,6 +443,7 @@ docker_versioned_pkg:
   '18.06': docker-ce-18.06.3.ce-3.el7
   '18.09': docker-ce-18.09.9-3.el7
   '19.03': docker-ce-19.03.13-3.el7
+  '20.10': docker-ce-20.10.2-3.el7
   'stable': docker-ce-19.03.12-3.el7
   'edge': docker-ce-19.03.12-3.el7
 
