@@ -469,19 +469,19 @@ docker_selinux_versioned_pkg:
 
 
 
-
-
-
-
-
-
 ```
 ansible-playbook -i inventory/pro/inventory.ini --become --become-user=root -e "@zdgt.yaml" cluster.yml 
 ```
 
 
 
-
+> 注意：
+> 有时下载不到storage.googleaps.com里面相关文件，需要手动下载，然后在zdgt.yaml添加自定义下载路径
+```yaml
+kubelet_download_url: "http://3.1.20.129/file/kubelet"
+kubectl_download_url: "http://3.1.20.129/file/kubectl"
+kubeadm_download_url: "http://3.1.20.129/file/kubeadm"
+```
 
 
 
