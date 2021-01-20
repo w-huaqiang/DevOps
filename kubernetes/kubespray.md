@@ -420,6 +420,10 @@ common_required_pkgs:
 
 
 kube_image_repo: "registry.cn-qingdao.aliyuncs.com/huaqiangk8s"
+
+# change nodelocaldns image，because kubespray have path /dns/ /cpa/
+nodelocaldns_image_repo: "{{ kube_image_repo }}/k8s-dns-node-cache"
+dnsautoscaler_image_repo: "{{ kube_image_repo }}/cluster-proportional-autoscaler-{{ image_arch }}"
 containerd_version: "1.3.7"
 containerd_versioned_pkg:
   'latest': "{{ containerd_package }}"
@@ -495,3 +499,7 @@ $ for i in {1..6}; do terraform taint vsphere_virtual_machine.vm$i; done
 $ terraform apply
 ```
 
+安装完成后会在以下目录生成缓存文件
+```bash
+/tmp/kubespray_cache/
+```
