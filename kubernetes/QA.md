@@ -6,7 +6,8 @@
     - [4. kubelet报错](#4-kubelet报错)
     - [5. oracle是否适合跑在kubernetes上，那么跑在docker上呢？](#5-oracle是否适合跑在kubernetes上那么跑在docker上呢)
     - [6.kubectl edit configmap 格式乱了](#6kubectl-edit-configmap-格式乱了)
-    - [2. `Unable to perform initial IP allocation check: unable to refresh the service IP block`](#2-unable-to-perform-initial-ip-allocation-check-unable-to-refresh-the-service-ip-block)
+    - [7. `Unable to perform initial IP allocation check: unable to refresh the service IP block`](#2-unable-to-perform-initial-ip-allocation-check-unable-to-refresh-the-service-ip-block)
+    - [8. docker 因为iptables无法启动]
 
 
 
@@ -220,4 +221,36 @@ net.ipv6.conf.all.disable_ipv6 = 1
 net.ipv6.conf.default.disable_ipv6 = 1
 EOF
 sysctl -p
+```
+
+### 8. docker无法启动
+```bash
+Feb 05 19:56:18 DisasterRecovery dockerd[36614]: time="2021-02-05T19:56:18.733293521+08:00" level=info msg="Loading containers: start."
+Feb 05 19:56:18 DisasterRecovery firewalld[1179]: 2021-02-05 19:56:18 ERROR: INVALID_TYPE: structure size mismatch 16 != 13
+Feb 05 19:56:18 DisasterRecovery firewalld[1179]: 2021-02-05 19:56:18 ERROR: COMMAND_FAILED: '/sbin/iptables -w2 -t filter -C FORWARD -j DOCKER-ISOLATION' failed: iptables v1.4.21: Couldn't load target `DOCKER
+                                                  
+                                                  Try `iptables -h' or 'iptables --help' for more information.
+Feb 05 19:56:18 DisasterRecovery firewalld[1179]: 2021-02-05 19:56:18 ERROR: COMMAND_FAILED: '/sbin/iptables -w2 -t nat -D PREROUTING -m addrtype --dst-type LOCAL -j DOCKER' failed: iptables: No chain/target/m
+Feb 05 19:56:18 DisasterRecovery firewalld[1179]: 2021-02-05 19:56:18 ERROR: COMMAND_FAILED: '/sbin/iptables -w2 -t nat -D OUTPUT -m addrtype --dst-type LOCAL ! --dst 127.0.0.0/8 -j DOCKER' failed: iptables: N
+Feb 05 19:56:18 DisasterRecovery firewalld[1179]: 2021-02-05 19:56:18 ERROR: COMMAND_FAILED: '/sbin/iptables -w2 -t nat -D OUTPUT -m addrtype --dst-type LOCAL -j DOCKER' failed: iptables: No chain/target/match
+Feb 05 19:56:18 DisasterRecovery firewalld[1179]: 2021-02-05 19:56:18 ERROR: COMMAND_FAILED: '/sbin/iptables -w2 -t nat -D PREROUTING' failed: iptables: Bad rule (does a matching rule exist in that chain?).
+Feb 05 19:56:18 DisasterRecovery firewalld[1179]: 2021-02-05 19:56:18 ERROR: COMMAND_FAILED: '/sbin/iptables -w2 -t nat -D OUTPUT' failed: iptables: Bad rule (does a matching rule exist in that chain?).
+Feb 05 19:56:18 DisasterRecovery firewalld[1179]: 2021-02-05 19:56:18 ERROR: COMMAND_FAILED: '/sbin/iptables -w2 -t filter -F DOCKER-ISOLATION' failed: iptables: No chain/target/match by that name.
+Feb 05 19:56:18 DisasterRecovery firewalld[1179]: 2021-02-05 19:56:18 ERROR: COMMAND_FAILED: '/sbin/iptables -w2 -t filter -X DOCKER-ISOLATION' failed: iptables: No chain/target/match by that name.
+Feb 05 19:56:18 DisasterRecovery firewalld[1179]: 2021-02-05 19:56:18 ERROR: COMMAND_FAILED: '/sbin/iptables -w2 -t nat -n -L DOCKER' failed: iptables: No chain/target/match by that name.
+Feb 05 19:56:18 DisasterRecovery firewalld[1179]: 2021-02-05 19:56:18 ERROR: COMMAND_FAILED: '/sbin/iptables -w2 -t filter -n -L DOCKER' failed: iptables: No chain/target/match by that name.
+Feb 05 19:56:18 DisasterRecovery firewalld[1179]: 2021-02-05 19:56:18 ERROR: COMMAND_FAILED: '/sbin/iptables -w2 -t filter -n -L DOCKER-ISOLATION-STAGE-1' failed: iptables: No chain/target/match by that name.
+Feb 05 19:56:19 DisasterRecovery firewalld[1179]: 2021-02-05 19:56:19 ERROR: COMMAND_FAILED: '/sbin/iptables -w2 -t filter -n -L DOCKER-ISOLATION-STAGE-2' failed: iptables: No chain/target/match by that name.
+Feb 05 19:56:19 DisasterRecovery firewalld[1179]: 2021-02-05 19:56:19 ERROR: COMMAND_FAILED: '/sbin/iptables -w2 -t filter -C DOCKER-ISOLATION-STAGE-1 -j RETURN' failed: iptables: Bad rule (does a matching rul
+Feb 05 19:56:19 DisasterRecovery firewalld[1179]: 2021-02-05 19:56:19 ERROR: COMMAND_FAILED: '/sbin/iptables -w2 -t filter -C DOCKER-ISOLATION-STAGE-2 -j RETURN' failed: iptables: Bad rule (does a matching rul
+Feb 05 19:56:19 DisasterRecovery dockerd[36614]: time="2021-02-05T19:56:19.055530840+08:00" level=info msg="Default bridge (docker0) is assigned with an IP address 172.17.0.0/16. Daemon option --bip can be use
+Feb 05 19:56:19 DisasterRecovery firewalld[1179]: 2021-02-05 19:56:19 ERROR: COMMAND_FAILED: '/sbin/iptables -w2 -t nat -C DOCKER -i docker0 -j RETURN' failed: iptables: Bad rule (does a matching rule exist in
+Feb 05 19:56:19 DisasterRecovery firewalld[1179]: 2021-02-05 19:56:19 ERROR: COMMAND_FAILED: '/sbin/iptables -w2 -D FORWARD -i docker0 -o docker0 -j DROP' failed: iptables: Bad rule (does a matching rule exist
+Feb 05 19:56:19 DisasterRecovery firewalld[1179]: 2021-02-05 19:56:19 ERROR: INVALID_ZONE: docker
+F
+```
+
+解决： 未安装iptables ,可以安装iptables
+```bash
+$ yum install iptables -y
 ```
