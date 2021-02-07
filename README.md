@@ -56,9 +56,9 @@
 # 5. serviceMesh
 - [istio安装](istio/istio.md)
 
-# 6. serverless
+# 6. assign on kubernetes
 
-- [knative](serverless/knative.md)
+- [argo](serverless/argo.md)
 
 # 7. 其他
 
