@@ -6,8 +6,9 @@
     - [4. kubelet报错](#4-kubelet报错)
     - [5. oracle是否适合跑在kubernetes上，那么跑在docker上呢？](#5-oracle是否适合跑在kubernetes上那么跑在docker上呢)
     - [6.kubectl edit configmap 格式乱了](#6kubectl-edit-configmap-格式乱了)
-    - [7. `Unable to perform initial IP allocation check: unable to refresh the service IP block`](#2-unable-to-perform-initial-ip-allocation-check-unable-to-refresh-the-service-ip-block)
-    - [8. docker 因为iptables无法启动]
+    - [7. `Unable to perform initial IP allocation check: unable to refresh the service IP block`](#7-unable-to-perform-initial-ip-allocation-check-unable-to-refresh-the-service-ip-block)
+    - [8. docker无法启动](#8-docker无法启动)
+    - [9. docker容器网络无法和docker0联通，也无法通过暴露的port访问内部容器](#9-docker容器网络无法和docker0联通也无法通过暴露的port访问内部容器)
 
 
 
@@ -206,7 +207,7 @@ kubectl get -n kube-system -o yaml cm aws-auth | sed -E 's/[[:space:]]+\\n/\\n/g
 ```
 
 
-### 2. `Unable to perform initial IP allocation check: unable to refresh the service IP block`
+### 7. `Unable to perform initial IP allocation check: unable to refresh the service IP block`
 
 apiserver无法启动，并报错
 ```bash
@@ -254,3 +255,12 @@ F
 ```bash
 $ yum install iptables -y
 ```
+
+
+### 9. docker容器网络无法和docker0联通，也无法通过暴露的port访问内部容器
+
+现象是： 1. docker 通过 -p 暴露的端口在外面无法访问
+        2. 宿主机中的容器之间可以互相访问，但是无法访问docker0等桥接设备
+        3. docker network create 创建的网络设备也不行
+
+解决： 极大可能是内核家在bridge.ko模块有问题，通过升级内核解决。
